@@ -9,18 +9,36 @@ import {
   Zap
 } from 'lucide-react';
 
+/**
+ * =================================================================================
+ * COMPONENT: AnalysisResult
+ * =================================================================================
+ * Menampilkan output visual dan tekstual dari hasil analisis AI JAGAT-X.
+ * Dilengkapi dengan fitur Print-to-PDF menggunakan native browser engine.
+ * =================================================================================
+ */
 const AnalysisResult = () => {
+  // Hooks untuk navigasi, pengambilan data dari state router, dan referensi DOM
   const location = useLocation();
   const navigate = useNavigate();
   const reportRef = useRef(null);
   
+  // Ekstraksi data hasil analisis dan preview gambar dari state location
   const { analysisResult, originalPreview } = location.state || {};
 
-  // FUNGSI NATIVE PRINT
+  /**
+   * TRIGGER NATIVE PRINT
+   * Memanggil fungsi cetak bawaan browser (window.print).
+   * Layout dikontrol via CSS class 'print:' dari Tailwind.
+   */
   const handlePrint = () => {
     window.print();
   };
 
+  /**
+   * FALLBACK: DATA NOT FOUND
+   * Mencegah crash jika user mengakses halaman ini secara langsung tanpa data analisis.
+   */
   if (!analysisResult) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-[#f8fafc]">
@@ -32,12 +50,17 @@ const AnalysisResult = () => {
     );
   }
 
+  /**
+   * THEME CONFIGURATION
+   * Mengatur skema warna UI berdasarkan status triase (Red, Orange, Blue).
+   */
   const triageStyles = {
     red: { bg: "bg-red-500", light: "bg-red-50", text: "text-red-600", border: "border-red-100" },
     orange: { bg: "bg-amber-500", light: "bg-amber-50", text: "text-amber-600", border: "border-amber-100" },
     blue: { bg: "bg-blue-600", light: "bg-blue-50", text: "text-blue-600", border: "border-blue-100" }
   };
 
+  // Menentukan tema aktif berdasarkan warna triage yang dikirim backend
   const currentTheme = triageStyles[analysisResult.triage.color] || triageStyles.blue;
 
   return (
@@ -45,6 +68,7 @@ const AnalysisResult = () => {
       
       {/* Navigation & Actions - SEMBUNYIKAN SAAT PRINT */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-10 print:hidden">
+        {/* Tombol Kembali ke Dashboard */}
         <button 
           onClick={() => navigate('/dashboard')}
           className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold transition-all group"
@@ -55,6 +79,7 @@ const AnalysisResult = () => {
           KEMBALI KE UPLOAD
         </button>
         
+        {/* Tombol Aksi Print/Simpan */}
         <button 
           onClick={handlePrint}
           className="flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 shadow-xl transition-all active:scale-95"
@@ -63,10 +88,10 @@ const AnalysisResult = () => {
         </button>
       </div>
 
-      {/* AREA REPORT */}
+      {/* AREA REPORT - Konten Utama Laporan */}
       <div ref={reportRef} className="max-w-7xl mx-auto p-4 bg-[#f8fafc] print:bg-white print:p-0">
         
-        {/* Header Tambahan Khusus di PDF (Opsional) */}
+        {/* Header Tambahan Khusus di PDF - Hanya muncul saat mode print */}
         <div className="hidden print:flex justify-between items-center border-b-2 border-slate-100 pb-6 mb-8">
             <div>
                 <h1 className="text-2xl font-black">JAGAT-X MEDICAL REPORT</h1>
@@ -77,8 +102,11 @@ const AnalysisResult = () => {
             </div>
         </div>
 
+        {/* Grid Layout: Main Analysis & Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 space-y-6">
+            
+            {/* XAI Visualizations - Original Scan vs Heatmap */}
             <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm print:shadow-none print:border-slate-100">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold text-lg flex items-center gap-2">
@@ -88,6 +116,7 @@ const AnalysisResult = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-6">
+                {/* Citra Asli dari Input User */}
                 <div className="space-y-3">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Original Scan</p>
                   <div className="bg-slate-900 rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
@@ -95,6 +124,7 @@ const AnalysisResult = () => {
                   </div>
                 </div>
 
+                {/* Citra Hasil Interpretasi AI (Base64 dari Backend) */}
                 <div className="space-y-3">
                   <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">AI Heatmap Overlay</p>
                   <div className="bg-slate-900 rounded-2xl overflow-hidden aspect-square border-2 border-blue-500/20 flex items-center justify-center">
@@ -108,6 +138,7 @@ const AnalysisResult = () => {
               </div>
             </div>
 
+            {/* AI Narrative Section - Penjelasan Tekstual Klinis */}
             <div className={`${currentTheme.light} p-8 rounded-[32px] border ${currentTheme.border} print:border-slate-200`}>
               <h4 className={`text-sm font-black uppercase tracking-widest ${currentTheme.text} mb-4 flex items-center gap-2`}>
                 <Info size={16} /> Clinical AI Narrative
@@ -118,8 +149,10 @@ const AnalysisResult = () => {
             </div>
           </div>
 
+          {/* Sidebar Area: Triage, Confidence, and Probabilities */}
           <aside className="lg:col-span-4 space-y-6">
             <div className="bg-white rounded-[32px] border border-slate-200 overflow-hidden shadow-sm print:shadow-none print:border-slate-100">
+              {/* Header Sidebar: Tingkat Kepercayaan & Triage Level */}
               <div className={`p-8 ${currentTheme.bg} text-white`}>
                 <div className="flex justify-between items-start mb-6">
                   <Zap size={24} fill="currentColor" />
@@ -134,6 +167,7 @@ const AnalysisResult = () => {
                 </p>
               </div>
               
+              {/* Body Sidebar: List Probabilitas Berbagai Patologi */}
               <div className="p-8">
                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Probabilities</h4>
                 <div className="space-y-4">
@@ -153,6 +187,7 @@ const AnalysisResult = () => {
                   ))}
                 </div>
 
+                {/* Audit Trail Section - ID Unik untuk Validitas Data */}
                 <div className="mt-10 pt-8 border-t border-slate-100 text-slate-600">
                   <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Audit ID</p>
                   <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 font-mono text-[8px] break-all leading-tight">
@@ -162,6 +197,7 @@ const AnalysisResult = () => {
               </div>
             </div>
             
+            {/* Legal Footer - Catatan Medis Penting */}
             <p className="hidden print:block text-[8px] text-slate-400 text-center italic mt-4">
               *Laporan ini dihasilkan secara otomatis oleh sistem kecerdasan buatan. 
               Keputusan medis final berada pada tanggung jawab dokter radiolog.

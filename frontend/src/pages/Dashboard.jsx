@@ -19,16 +19,30 @@ import {
   Zap
 } from 'lucide-react';
 
+/**
+ * =================================================================================
+ * COMPONENT: Dashboard
+ * =================================================================================
+ * Interface utama untuk dokter/tenaga medis melakukan unggah citra radiologi.
+ * Menghubungkan Frontend dengan model AI (ResNet-50) melalui API Backend.
+ * =================================================================================
+ */
 const Dashboard = () => {
+  // Referensi dan Hooks Navigasi
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { user, logout } = useAuth(); // Mengambil data dokter & fungsi logout
 
+  // State Management untuk File, Preview, dan UI Feedback
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  /**
+   * PROSES VALIDASI & PREVIEW FILE
+   * Memastikan file yang diunggah adalah gambar (JPG/PNG) dan membuat URL preview.
+   */
   const processFile = (file) => {
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
       setSelectedFile(file);
@@ -40,27 +54,36 @@ const Dashboard = () => {
     }
   };
 
+  // Handler untuk input file manual via dialog sistem
   const handleFileChange = (e) => processFile(e.target.files[0]);
 
+  // Fungsi untuk membersihkan pilihan file (reset state)
   const clearFile = () => {
     setSelectedFile(null);
     setPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  /**
+   * HANDLER ANALISIS AI
+   * Mengirimkan citra radiologi ke backend FastAPI untuk proses inferensi model.
+   */
   const handleRunAnalysis = async () => {
     if (!selectedFile) return;
     setIsAnalyzing(true);
     
+    // Penyiapan data Multipart (Image + Metadata User)
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('user_fullname', user?.full_name || "Dr. Medical Professional");
 
     try {
+      // POST ke endpoint analisis backend
       const response = await axios.post('http://localhost:8000/analyze', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      // Navigasi ke halaman hasil dengan membawa payload data analisis
       navigate('/analysis-result', { 
         state: { 
           analysisResult: response.data, 
@@ -99,7 +122,7 @@ const Dashboard = () => {
               </span>
             </div>
 
-            {/* User Info Section */}
+            {/* User Info Section - Identitas Dokter yang sedang login */}
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200 rotate-3 transition-transform hover:rotate-0">
                 <UserIcon size={20} />
@@ -128,7 +151,7 @@ const Dashboard = () => {
 
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Kolom Kiri: Upload Area dengan Animasi */}
+          {/* Kolom Kiri: Upload Area dengan Animasi Drag & Drop */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -137,6 +160,7 @@ const Dashboard = () => {
           >
             <div className="bg-white rounded-[3rem] border border-white shadow-2xl shadow-slate-200/50 overflow-hidden min-h-[580px] flex flex-col relative group">
               {!selectedFile ? (
+                // Tampilan Awal: Dropzone untuk file upload
                 <div 
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -162,6 +186,7 @@ const Dashboard = () => {
                   </button>
                 </div>
               ) : (
+                // Tampilan Preview: Setelah file dipilih
                 <div className="relative flex-1 bg-slate-900 flex items-center justify-center p-10 min-h-[580px]">
                   <motion.img 
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -171,6 +196,7 @@ const Dashboard = () => {
                     className="max-w-full max-h-[520px] object-contain rounded-2xl shadow-2xl border border-white/10" 
                   />
                   
+                  {/* Tombol Hapus/Cancel File */}
                   {!isAnalyzing && (
                     <button 
                       onClick={clearFile}
@@ -180,6 +206,7 @@ const Dashboard = () => {
                     </button>
                   )}
 
+                  {/* Overlay Loading saat AI sedang berproses */}
                   <AnimatePresence>
                     {isAnalyzing && (
                       <motion.div 
@@ -204,7 +231,7 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Kolom Kanan: Sidebar dengan Style Glassmorphism */}
+          {/* Kolom Kanan: Sidebar dengan Kontrol Analisis & Protokol Klinis */}
           <motion.aside 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -220,6 +247,7 @@ const Dashboard = () => {
               </div>
 
               <div className="space-y-8">
+                {/* Info File terpilih */}
                 <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 relative overflow-hidden group">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Current Selection</p>
                   {selectedFile ? (
@@ -235,6 +263,7 @@ const Dashboard = () => {
                   <div className="absolute top-0 right-0 w-24 h-24 bg-blue-100/30 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150" />
                 </div>
 
+                {/* Tombol Eksekusi Inferences */}
                 <button 
                   onClick={handleRunAnalysis}
                   disabled={!selectedFile || isAnalyzing}
@@ -251,6 +280,7 @@ const Dashboard = () => {
                   )}
                 </button>
 
+                {/* Seksi Protokol Klinis & Disclaimer */}
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-2 text-amber-600">
                     <AlertCircle size={16} />
@@ -265,7 +295,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Privacy Card (Dark Theme) */}
+            {/* Privacy Card: Penjelasan Keamanan Data Medis */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="bg-slate-900 rounded-[3rem] p-8 text-white relative overflow-hidden shadow-2xl group"
@@ -286,6 +316,7 @@ const Dashboard = () => {
           </motion.aside>
         </main>
 
+        {/* Input Tersembunyi untuk Interaksi Pemilihan File */}
         <input 
           ref={fileInputRef} 
           type="file" 

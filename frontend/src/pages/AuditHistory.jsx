@@ -17,13 +17,27 @@ import {
   Database
 } from 'lucide-react';
 
+/**
+ * =================================================================================
+ * COMPONENT: AuditHistory
+ * =================================================================================
+ * Menampilkan riwayat log audit sistem JAGAT-X.
+ * Berfungsi sebagai immutable audit trail untuk melacak aktivitas medis dan triase.
+ * =================================================================================
+ */
 const AuditHistory = () => {
+  // Hooks untuk navigasi, otentikasi, dan pengelolaan state lokal
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
+  /**
+   * MENGAMBIL LOG AUDIT DARI BACKEND
+   * Melakukan request GET ke endpoint history audit.
+   * Catatan: URL masih mengarah ke localhost:8000.
+   */
   const fetchAuditLogs = async () => {
     setLoading(true);
     try {
@@ -32,18 +46,22 @@ const AuditHistory = () => {
     } catch (error) {
       console.error("Fetch Error:", error);
     } finally {
+      // Memberikan delay estetika untuk efek loading skeleton/spinner
       setTimeout(() => setLoading(false), 800); 
     }
   };
 
+  // Memanggil data saat komponen pertama kali dirender
   useEffect(() => {
     fetchAuditLogs();
   }, []);
 
+  // Logika pencarian berdasarkan Audit ID secara case-insensitive
   const filteredLogs = logs.filter(log => 
     log.audit_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pemetaan warna status triase untuk konsistensi visual
   const statusColors = {
     CRITICAL: "bg-red-500 shadow-red-200 text-white",
     URGENT: "bg-amber-500 shadow-amber-200 text-white",
@@ -54,7 +72,7 @@ const AuditHistory = () => {
     <div className="min-h-screen bg-[#F1F5F9] p-4 lg:p-10 font-sans text-slate-900 selection:bg-blue-600 selection:text-white">
       <div className="max-w-7xl mx-auto">
         
-        {/* TOP NAVIGATION BAR */}
+        {/* TOP NAVIGATION BAR - Berisi Logo, Judul Halaman, dan Kontrol User */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 bg-white/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white shadow-xl">
           <div className="flex items-center gap-6">
             {/* Logo & Brand Section */}
@@ -81,6 +99,7 @@ const AuditHistory = () => {
             </div>
           </div>
 
+          {/* Search Input & Logout Action */}
           <div className="flex items-center gap-4">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={18} />
@@ -100,7 +119,7 @@ const AuditHistory = () => {
           </div>
         </div>
 
-        {/* STATS SUMMARY */}
+        {/* STATS SUMMARY - Menampilkan ringkasan jumlah data dan status keamanan */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -130,7 +149,7 @@ const AuditHistory = () => {
           </motion.div>
         </div>
 
-        {/* TABLE LOGS */}
+        {/* TABLE LOGS - Tabel utama untuk menampilkan detail audit */}
         <div className="bg-white rounded-[3rem] border border-white shadow-2xl shadow-slate-200/50 overflow-hidden relative">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -145,6 +164,7 @@ const AuditHistory = () => {
               <tbody className="divide-y divide-slate-50">
                 <AnimatePresence mode="popLayout">
                   {loading ? (
+                    // State Loading: Menampilkan spinner
                     <tr>
                       <td colSpan="4" className="py-32 text-center">
                         <RefreshCw className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-4" />
@@ -152,6 +172,7 @@ const AuditHistory = () => {
                       </td>
                     </tr>
                   ) : filteredLogs.length > 0 ? (
+                    // State Data Tersedia: Melakukan mapping logs
                     filteredLogs.map((log, index) => (
                       <motion.tr 
                         key={log.audit_id}
@@ -160,6 +181,7 @@ const AuditHistory = () => {
                         transition={{ delay: index * 0.05 }}
                         className="hover:bg-blue-50/30 transition-all group cursor-default"
                       >
+                        {/* Audit ID dengan ikon hash */}
                         <td className="px-10 py-6">
                           <div className="flex items-center gap-4">
                             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white group-hover:rotate-12 transition-all duration-300">
@@ -168,6 +190,7 @@ const AuditHistory = () => {
                             <span className="font-mono text-sm font-black text-slate-700 tracking-tight">{log.audit_id}</span>
                           </div>
                         </td>
+                        {/* Nama Dokter/User yang melakukan eksekusi */}
                         <td className="px-10 py-6">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-[10px] font-black">
@@ -176,6 +199,7 @@ const AuditHistory = () => {
                             <span className="text-sm font-bold text-slate-600">{log.doctor_name}</span>
                           </div>
                         </td>
+                        {/* Label Triage berwarna */}
                         <td className="px-10 py-6">
                           <div className="flex justify-center">
                             <span className={`px-5 py-1.5 rounded-full text-[9px] font-black shadow-lg uppercase tracking-widest ${statusColors[log.triage_result] || 'bg-slate-200'}`}>
@@ -183,6 +207,7 @@ const AuditHistory = () => {
                             </span>
                           </div>
                         </td>
+                        {/* Waktu dan Tanggal Eksekusi */}
                         <td className="px-10 py-6 text-right">
                           <div className="flex flex-col items-end gap-1">
                             <span className="text-sm font-bold text-slate-700 flex items-center gap-2">
@@ -197,6 +222,7 @@ const AuditHistory = () => {
                       </motion.tr>
                     ))
                   ) : (
+                    // State Empty: Jika pencarian tidak menemukan hasil
                     <tr>
                       <td colSpan="4" className="py-32 text-center text-slate-400">
                         <Search size={40} className="mx-auto mb-4 opacity-20" />
@@ -210,7 +236,7 @@ const AuditHistory = () => {
           </div>
         </div>
 
-        {/* FOOTER */}
+        {/* FOOTER - Status branding dan indikator aktivitas engine */}
         <div className="mt-12 flex justify-between items-center px-6">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">JAGAT-X Core Engine • Security Audit</p>
           <div className="flex gap-4">

@@ -12,6 +12,9 @@ import JagatLogo from '../assets/image.png'; // Pastikan path logo Anda benar
 
 // --- SHARED COMPONENTS ---
 
+/**
+ * NavButton: Komponen tombol navigasi dengan efek gradient slide dan animasi hover.
+ */
 const NavButton = ({ children, onClick }) => (
   <button 
     onClick={onClick}
@@ -24,6 +27,9 @@ const NavButton = ({ children, onClick }) => (
   </button>
 );
 
+/**
+ * GlassCard: Komponen kartu dengan efek glassmorphism (blur & semi-transparan).
+ */
 const GlassCard = ({ children, className = "" }) => (
   <motion.div 
     whileHover={{ y: -8, shadow: "0 20px 40px rgba(0,0,0,0.05)" }}
@@ -33,10 +39,19 @@ const GlassCard = ({ children, className = "" }) => (
   </motion.div>
 );
 
+/**
+ * =================================================================================
+ * COMPONENT: LandingPage
+ * =================================================================================
+ * Halaman utama (Public Portal) yang menjelaskan value proposition, teknologi AI,
+ * dataset, dan sistem triase medis JAGAT-X.
+ * =================================================================================
+ */
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
 
+  // Efek untuk mendeteksi scroll guna mengubah tampilan Navbar (sticky effect)
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -46,13 +61,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-600 selection:text-white">
       
-      {/* DECORATIVE ELEMENTS */}
+      {/* DECORATIVE ELEMENTS: Ornamen blur di latar belakang untuk estetika modern */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-100/40 blur-[120px] rounded-full" />
         <div className="absolute bottom-[10%] right-[-5%] w-[40%] h-[40%] bg-indigo-50/50 blur-[100px] rounded-full" />
       </div>
 
-      {/* INTEGRATED TOP NAVIGATION BAR */}
+      {/* INTEGRATED TOP NAVIGATION BAR: Responsif terhadap status scroll */}
       <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 px-6 ${
         scrolled ? 'py-4' : 'py-8'
       }`}>
@@ -72,7 +87,7 @@ export default function LandingPage() {
               </span>
             </div>
 
-            {/* Page Title Section - Adapted for Landing Page */}
+            {/* Page Title Section - Identitas portal publik */}
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200 rotate-3">
                 <ShieldCheck size={20} />
@@ -90,7 +105,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* HERO: DASAR PEMIKIRAN */}
+      {/* HERO: DASAR PEMIKIRAN - Menjelaskan misi sosial dan fungsi utama screening */}
       <section className="relative pt-60 pb-24 z-10">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
@@ -114,6 +129,7 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
+          {/* Visual Preview Dashboard dengan aksen teknologi */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 blur-2xl rounded-[3rem]" />
             <div className="relative rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl bg-slate-900">
@@ -140,7 +156,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* DATASET SECTION */}
+      {/* DATASET SECTION: Menjelaskan sumber data pelatihan model AI */}
       <section className="py-24 relative z-10 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -172,7 +188,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TECHNICAL: ARCHITECTURE */}
+      {/* TECHNICAL: ARCHITECTURE - Detail teknis Deep Learning dan pemrosesan citra */}
       <section className="py-24 bg-slate-900 text-white relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -207,7 +223,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TRIAGE SYSTEM */}
+      {/* TRIAGE SYSTEM: Penjelasan alur kerja triase berdasarkan warna (Red, Yellow, Green) */}
       <section className="py-24 bg-white relative">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -258,9 +274,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* COMPLIANCE & PDP */}
+      {/* COMPLIANCE & PDP: Bagian Disclaimer Medis dan Kepatuhan Hukum Perlindungan Data */}
       <section className="py-24 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
+          {/* Medical Disclaimer Section */}
           <div className="p-12 bg-white rounded-[3.5rem] border border-slate-200 shadow-sm relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-10 -mt-10 transition-all group-hover:scale-110" />
             <ShieldAlert className="text-red-600 mb-8 relative z-10" size={48} />
@@ -272,6 +289,7 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* Privacy & Regulation Section (UU PDP) */}
           <div className="p-12 bg-blue-600 rounded-[3.5rem] text-white shadow-2xl shadow-blue-500/30 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-bl-full -mr-10 -mt-10 transition-all group-hover:scale-110" />
             <Lock className="text-white mb-8 relative z-10" size={48} />
